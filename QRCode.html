@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>QRCode</title>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	  	(function($) {
+	    var _options = null;
+		jQuery.fn.MyQRCode = function(options) {
+			_options = $.extend({}, $.fn.MyQRCode.defaults, options);
+			return this.each(function()
+			{
+				//var codebase = "https://chart.googleapis.com/chart?chs={size}&cht=qr&chl={content}&choe={encoding}";
+				var codebase = "http://chart.apis.google.com/chart?{content}";
+				//var mycode = codebase.replace(/{size}/g, _options.size);
+				//mycode = mycode.replace(/{content}/g, escape(_options.content));
+				//mycode = mycode.replace(/{encoding}/g, _options.encoding);
+				var mycode = codebase.replace(/{content}/g, _options.content);
+				//$("#genQrCode").remove();
+				$(this).append("<img src='"+mycode+"'>");
+			});
+		}
+		//default values
+		jQuery.fn.MyQRCode.defaults = {
+			encoding:"UTF-8",
+			content: window.location,
+			size:"150x150"
+		};
+		})(jQuery);
+	</script>
+	<script>
+		function getQRCode(){
+			var input = $("div input");
+			var param = {
+		            chs: "200x200"
+		            , cht: "qr"
+		            , chld: "L|1"
+		            , choe: "UTF-8"
+		            , chl: ""
+		        };
+		        var chl = [], title, val;
+		        //VCARD格式
+		        chl.push("BEGIN:VCARD");
+		        chl.push("\n");
+		        chl.push("VERSION:3.0");
+		        chl.push("\n");
+				input.each(function(){
+					var title = $.trim($(this).attr('id'));
+					var val = $.trim($(this).val());
+					//alert(id+value);
+						chl.push(title);
+		                chl.push(":");
+		                chl.push(val);
+		                chl.push("\n");
+				});;
+		        chl.push("END:VCARD");
+		        param.chl = chl.join("");
+
+			var content = $.param(param);
+			$("#qrcode").MyQRCode({
+				 content: content
+			});
+		}
+	</script>
+</head>
+<body>
+	<div>
+	姓名：<input id="FN" ><br>
+	电话：<input id="TEL" ><br>
+	e-mail：<input id="EMAIL" ><br>
+	MSN：<input id="X-MSN" ><br>
+	QQ：<input id="X-QQ" ><br>
+	公司：<input id="ORG" ><br>
+	职位：<input id="TITLE" ><br>
+	地址：<input id="ADR" ><br>
+	个人主页：<input  id="URL" ><br>
+	</div>
+	<input type="button" value="生成二维码" onclick="getQRCode()">
+  	<span id="qrcode" style="padding-left:100px"></span>
+</body>
+</html>
